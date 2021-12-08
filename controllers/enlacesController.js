@@ -49,3 +49,37 @@ exports.nuevoEnlace = async (req, res, next) => {
     }
 
 }
+
+// Obtener el enlace
+exports.obtenerEnlace = async (req, res, next) => {
+    const { url } = req.params;
+
+    // Verificar si existe el enlace
+    const enlace = await Enlace.findOne({ url });
+
+    if (!enlace) {
+        res.status(404).json({ msg: 'Ese enlace no existe' });
+        return next();
+    }
+
+    // Si el enlace existe
+    res.json({ archivo: enlace.nombre });
+
+    // Si las descargas son iguales a 1 - Borrar la entrada y borrar el archivo
+    const { nombre, descargas } = enlace;
+
+    if (descargas === 1) {
+        // Eliminar el archivo
+        req.archivo = nombre;
+
+        // Eliminar entrada de la DB
+        await Enlace.findOneAndRemove(req.params.url);
+
+        next();
+    } else {
+        // Si las descargas son mayores a 1 - Restar 1
+        enlace.descargas--;
+        await enlace.save();
+    }
+
+}
