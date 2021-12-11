@@ -14,9 +14,12 @@ router.post('/',
     enlacesController.nuevoEnlace
 );
 
+router.get('/',
+    enlacesController.obtenerEnlaces
+);
+
 router.get('/:url',
-    enlacesController.obtenerEnlace,
-    archivosController.eliminarArchivo
+    enlacesController.obtenerEnlace
 );
 
 module.exports = router;
